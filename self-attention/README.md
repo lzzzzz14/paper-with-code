@@ -4,6 +4,8 @@
 
 [self-attention代码]( https://github.com/Enzo-MiMan/cv_related_collections/blob/main/deep_learning_basic/self-attention/self_attention.py)
 
+[b站视频讲解]([self-Attention｜自注意力机制 ｜位置编码 ｜ 理论 + 代码_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1qo4y1F7Ep/?spm_id_from=333.788&vd_source=78a547131858b1310aa0cefdfdab4b71))
+
 ## Self-Attention
 
 通过计算序列中每个元素与同一序列中所有其他元素之间的注意权重来捕捉输入标记之间的语境关系
