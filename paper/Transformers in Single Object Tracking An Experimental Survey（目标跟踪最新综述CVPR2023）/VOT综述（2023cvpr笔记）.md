@@ -51,74 +51,69 @@ OTB-100、LaSOT、GOT-10k、TrackingNet、UAV123
 
 
 
-## 介绍Transformer和Vision Transformer（vit）
+## Transformer in Single Object Tracking
 
-![image-20230607104604659](https://img-blog.csdnimg.cn/img_convert/01c267f884b92cb4c1a3ae48879a6c40.png)
+* 所有基于全Transformer和基于CNN-Transformer的跟踪器都使用预训练网络，并将其视为主干网络
+* 一些跟踪器在跟踪期间更新他们的模型，其中一些没有更新
+* 一些跟踪器使用背景信息来跟踪目标，一些没有使用
 
+![123455](https://img-blog.csdnimg.cn/img_convert/7f1ea0f576d6ca3a7de3704abb17372a.png)
 
+### 双流两阶段
 
-Transformer架构接收作为矢量序列的输入，并使用位置嵌入算法将该序列中每个标记的位置信息添加到其表示
+* 使用两个相同的网络分支管道 (双流) 来提取目标图像和搜索图像的特征
 
+* 目标模版和搜索区域的特征提取与特征融合在两个可区分的阶段中完成
+* 基于CNN-Transformer都是双流双阶段
 
+### 单流一阶段
 
-## Self-Attention
+* 使用单个网络管道, 特征提取和特征融合通过单阶段一起完成
 
-通过计算序列中每个元素与同一序列中所有其他元素之间的注意权重来捕捉输入标记之间的语境关系
+![image-20230607162309973](https://img-blog.csdnimg.cn/img_convert/5ca973df3d334fb8fe8da0de890870f9.png)
 
-Transformer使用“Query”、“Key“、Value”抽象来计算输入序列的注意力
+## CNN-Transformer based Trackers
 
-1. 三个不同的向量：查询向量Q、关键向量K、价值向量V
+* 只基于CNN的跟踪器: 捕获目标模板和搜索区域之间的非线性交互(遮挡、变形和旋转)是不够的
 
-   * 通过将输入向量（x）与三个相应的矩阵相乘而产生的：W<sub>X</sub>，W<sub>K</sub>，W<sub>V</sub>（向量）
-   * 所有输入向量打包在一起形成输入矩阵X，吻别产生对应的：Q、K、V
-2. 通过取Q和K的点击来计算输入X得分数S（分数矩阵S）
-   * 分数矩阵S提供了基于特定位置的输入向量应该对输入序列的其他部分给予多少关注
+1. #### [Transformer Meets Tracker: Exploiting Temporal Context for Robust Visual Tracking](https://arxiv.org/pdf/2103.11681)
 
+   * 一组模版补丁和搜索区域被送入一个CNN骨干网络以提取深层特征
+   * 提取的模版特征被送入Transformer的**__编码器__**,利用注意力机制捕捉高质量的目标特征
+   * 搜索区域的特征被送入Transformer的**__解码器__**
+   * 通过前几帧的信息性目标线索与搜索区域的特征聚合在一起产生解码的特征
 
-$$
-S = Q \cdot K^T
-$$
+![image-20230607163851960](https://img-blog.csdnimg.cn/img_convert/99b162e5788e732597974809bc4570d5.png)
 
-3. 对分数矩阵S进行归一化（得到更稳定的梯度）
-   * S<sub>n</sub>是归一化的得分矩阵，d<sub>k</sub>是key向量的维度
+TrSiam: 从编码特征中裁剪目标特征, 然后与解码特征交叉相关以定位目标位置
 
-$$
-S_n = \frac{S}{\sqrt{d_k}}
-$$
+TrDiMP: 对编码特征应用端到端判别相关滤波器 (DCF) 生成相应映射, 然后使用响应映射在搜索区域中定位目标
 
-4. 将分数转换为概率（P）
-   * 将SoftMax函数应用于归一化得分矩阵
+* 由于在此跟踪器中使用了Transformer, 一组目标模版的线索用于定位目标, 因此跟踪器能够定位具有严重外观变化的目标
 
-$$
-P = SoftMax(S_n)
-$$
+2. [High-Performance Discriminative Tracking With Transformers (DTT)](https://arxiv.org/pdf/2203.13533v2)
+   
+   * 目标模版被送入背景场景, 然后Transformer架构捕捉到目标的最有辨识度的线索
+   * 涉及进行跟踪, 不需要训练单独的判别模型 &rarr; 跟踪速度较快
+3. [Transformer tracking](https://arxiv.org/pdf/2103.15436v1)
+   
+   三个模块: 一个CNN主干网络, 一个基于Transformer的特征融合网络, 以及一个预测网络
 
-5. 得到自注意力输出值（Z）
-   * 将概率（P）与值矩阵V相乘
+![image-20230607164400828](https://img-blog.csdnimg.cn/img_convert/5e3759146eac5a5f26b9bd4a636fd1b2.png)
 
-$$
-Z = P \cdot V
-$$
+* 目标模版和搜索区域的特征是使用ResNet50模型提取
+  * 然后使用1×1卷基层进行整形
 
-### 自注意力统一为单个方程
+* 基于Transformer的特征融合网络有N个特征融合层 (每层有一个ECA和CFA, 分别用于增强自我注意和交叉注意)
+* 最后,将融合后的特征输入预测网络,分别采用简单的分类和回归分支进行目标定位和坐标定位
 
-$$
-Attention(Q, K, V) = softmax(\frac {Q \cdot K^T} {\sqrt{d_k}}) \cdot V
-$$
+4. [Learning Spatio-Temporal Transformer for Visual Tracking](https://arxiv.org/pdf/2103.17154)
 
+   提出一种基于DETR物体检测的VOT-Transformer架构, 跟踪器被称为STARK
 
+   * ResNet50用于提取出事目标模版、动态目标模版和搜索区域的深度特征
+     * 这些特征被展平、连接,然后馈送到具有编码器和解码器架构的Transformer
+   * 训练了Transfomer来捕获目标对象的**__空间和时间线索__**
 
-## Multi-Head Self-Attention
-
-* 来提高自我关注机制的性能
-
-* 使用了多组权重矩阵（W<sub>Q</sub>，W<sub>K</sub>，W<sub>V</sub>）-->将相同的输入数据投影到不同的子空间中
-* q、k、v得每个投影版本上同时计算注意力函数以产生相应的输出值
-* 最后阶段，将所有注意力头的输出连接起来，然后与另一个可训练权重矩阵W<sub>O</sub>相乘以获得多头自注意力M<sub>atten</sub>
-
-$$
-M_{atten} = Contat(head_1, ... , head_n) \cdot W_O
-$$
-
-* head<sub>i</sub>是注意力头i得输出
+![image-20230607165330774](https://img-blog.csdnimg.cn/img_convert/c2e23634949eec33c82e1032e4d7e644.png)
 
