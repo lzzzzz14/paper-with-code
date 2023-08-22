@@ -1,6 +1,6 @@
 # Multi-Head Attention
 
-[讲解](https://u5rpni.axshare.com/?id=4ak987&p=multi-head-attention&sc=3&g=1)
+[讲解（图片）](https://u5rpni.axshare.com/?id=4ak987&p=multi-head-attention&sc=3&g=1)
 
 [Multi-Head Attention | 算法 + 代码_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1gV4y167rS/?spm_id_from=333.788&vd_source=78a547131858b1310aa0cefdfdab4b71)
 
