@@ -107,3 +107,18 @@ Attention(Q, K, V) = softmax(\frac {Q \cdot K^T} {\sqrt{d_k}}) \cdot V
 $$
 
 
+
+## Multi-Head Self-Attention
+
+* 来提高自我关注机制的性能
+
+* 使用了多组权重矩阵（W<sub>Q</sub>，W<sub>K</sub>，W<sub>V</sub>）-->将相同的输入数据投影到不同的子空间中
+* q、k、v得每个投影版本上同时计算注意力函数以产生相应的输出值
+* 最后阶段，将所有注意力头的输出连接起来，然后与另一个可训练权重矩阵W<sub>O</sub>相乘以获得多头自注意力M<sub>atten</sub>
+
+$$
+M_{atten} = Contat(head_1, ... , head_n) \cdot W_O
+$$
+
+* head<sub>i</sub>是注意力头i得输出
+
