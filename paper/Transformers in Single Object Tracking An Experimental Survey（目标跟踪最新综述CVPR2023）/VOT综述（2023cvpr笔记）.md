@@ -1,5 +1,9 @@
 # VOT
 
+[arxiv](https://arxiv.org/pdf/2302.11867)
+
+[csdn论文翻译](https://blog.csdn.net/qq_43437453/article/details/131096480)
+
 * 给定视频序列第一帧中目标的初始状态，这些算法跟踪剩余帧中的目标状态
 
 ## 单个对象
