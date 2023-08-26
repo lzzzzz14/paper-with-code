@@ -10,7 +10,7 @@
 
 [代码](https://github.com/Enzo-MiMan/cv_related_collections/tree/main/classification/vision_transformer/vit_model.py)
 
-![Figure 1 from paper](https://gitcode.net/mirrors/google-research/vision_transformer/-/raw/master/vit_figure.png)
+![Figure 1 from paper](https://github.com/lzzzzz14/paper-with-code/blob/main/ViT/images/vit_figure.png?raw=true)
 
 ## 过一遍ViT的前向传播
 
