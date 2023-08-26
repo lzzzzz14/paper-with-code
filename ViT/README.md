@@ -64,7 +64,7 @@ class PatchEmbed(nn.Module):
   2. flatten[2]: (8, 768, 14, 14) &rarr; (8, 768, 196)
   3. Transpose(1, 2): (8, 768, 196) &rarr; (8, 196, 768) 
 
-![image-20230823195756446](/Users/lizhi/Library/Application Support/typora-user-images/image-20230823195756446.png)
+![image-20230823195756446](https://github.com/lzzzzz14/paper-with-code/blob/main/ViT/images/2.png?raw=true)
 
 2. Class embedding + Positional Embedding
 
