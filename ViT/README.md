@@ -99,6 +99,7 @@ x = self.pos_drop(x + self.ppos_embed)
 ![image-20230824113728092](/Users/lizhi/Library/Application Support/typora-user-images/image-20230824113728092.png)
 
 ```python
+# x.shape (8, 197, 768)
 x = self.blocks(x)		# 在vit中调用Block类(也就是transformer中的encoder块)
 
 class Block(nn.Module):
@@ -109,17 +110,76 @@ class Block(nn.Module):
     x = x + self.drop_path(self.mlp(self.norm2(x)))
 
 class Attention(nn.Module):
+  # 过多头自注意力
   def forward(self, x):
-    B, N, C = x.shape
+    B, N, C = x.shape	# 首先查看x的形状 (8, 197, 768)
     
+    # 这里通过self.qkv(这是一个全连接层), 将通道数变为768*3
+    # 然后reshape为 (8, 197, 3, 12, 64)
+    # 最后使用permute改变维度的位置 (3, 8, 12, 197, 64)
     qkv = self.qkv(x).reshape(B, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
+    q, k, v = qkv[0], qkv[1], qkv[2]	# 将第一个维度分给q, k, v 对应的形状为 (8, 12, 197, 64)
+    
+    attn = (q @ k.transpose(-2, -1)) * self.scale	# q乘k的转置, 除以√dk 形状 (8, 12, 197, 197)
+    attn = attn.softmax(dim=-1)	# 对最后一个维度做softmax
+    attn = self.attn_drop(attn)	
+    
+    # 将qk的关系分数乘v (8, 12, 197, 64)
+    # transpose (8, 197, 12, 64)
+    # reshape (8, 197, 768)
+    x = (attn @ v).transpose(1, 2).reshape(B, N, C)	
+    x = self.proj(x)	# Linear(dim, dim) 不改变形状
+    x = self.proj_drop(x)
+    return x
+  
+class Mlp(nn.Module):
+  # 多层感知机
+  def forward(self, x):
+    x = self.fc1(x)		# Linear(in_features=768, out_features=3072)
+    x = self.act(x)		# GELU
+    x = self.drop(x)	# Dropout(p=0.0)
+    x = self.fc2(x)		# Linear(in_features=3072, out_features=768)
+    x = self.drop(x)	# Dropout(p=0.0)
+    return x
 ```
 
+* 过一遍形状变化
 
+  x (8, 197, 768)
 
+  1. 过一个全连接层 x: (8, 197, 768) &rarr; qkv: (8, 197, 768*3)
+  2. reshape &rarr; qkv: (8, 197, 3, 12, 64), permute &rarr; qkv: (3, 8, 12, 197, 64)
+  3. q, k, v: (8, 12, 197, 64)
+  4. attn: q × k<sup>T</sup> ÷ √d<sub>k</sub>  (8, 12, 197, 197)
+  5. x = attn × v (8, 12, 197, 64)
+  6. transpose &rarr; x: (8, 186, 12, 64), reshape &rarr; x: (8, 197, 768)
+  7. Linear: x(8, 197, 3072) &rarr; Linear: x(8, 197, 768)
 
+4. Classifier
 
+   经过上面的3个步骤之后, 使用 `self.pre_logits(x[:, 0])`来将第二步插入的cls_token拿出来
 
+   `self.pre_logits = nn.Identity()`是一个nn.Identity( ), 所以返回一个 (8, 768) 形状的张量
+
+   ```python
+   # num_features = 768
+   self.head = nn.Linear(self.num_features, num_classes) if num_classes > 0 else nn.Identity()
+   
+   def forward(self, x):
+           x = self.forward_features(x)	# 前面的三步, 返回(8, 768)
+           if self.head_dist is not None:
+               x, x_dist = self.head(x[0]), self.head_dist(x[1])
+               if self.training and not torch.jit.is_scripting():
+                   # during inference, return the average of both classifier predictions
+                   return x, x_dist
+               else:
+                   return (x + x_dist) / 2
+           else:
+               x = self.head(x)	# x (8, num_classes) 进行分类
+           return x
+   ```
+
+   
 
 
 
