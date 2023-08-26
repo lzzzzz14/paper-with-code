@@ -92,11 +92,11 @@ x = self.pos_drop(x + self.ppos_embed)
   1. x concat cls_token: (8, 196, 768) &rarr; (8, 197, 768)
   2. x + pos_drop: (8, 197, 768) 形状没有变化
 
-![image-20230824101740193](/Users/lizhi/Library/Application Support/typora-user-images/image-20230824101740193.png)
+![image-20230824101740193](https://github.com/lzzzzz14/paper-with-code/blob/main/ViT/images/3.png?raw=true)
 
 3. Transformer Encoder
 
-![image-20230824113728092](/Users/lizhi/Library/Application Support/typora-user-images/image-20230824113728092.png)
+![image-20230824113728092](https://github.com/lzzzzz14/paper-with-code/blob/main/ViT/images/4.png?raw=true)
 
 ```python
 # x.shape (8, 197, 768)
