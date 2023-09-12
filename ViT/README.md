@@ -1,6 +1,6 @@
 # ViT
 
-[论文地址](arxiv.org/pdf/2010.11929.pdf)
+[论文地址](https://arxiv.org/abs/2010.11929)
 
 [官方pytorch实现](https://github.com/pytorch/vision/blob/main/torchvision/models/vision_transformer.py)
 
