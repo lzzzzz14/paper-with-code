@@ -198,7 +198,7 @@ class SwinTransformerBlock(nn.Module):
                  fused_window_process=False):
         super().__init__()
         self.dim = dim
-        self.input_resolution = input_resolution
+        self.input_resolution = input_resolution    # (56, 56)
         self.num_heads = num_heads
         self.window_size = window_size
         self.shift_size = shift_size
@@ -245,14 +245,14 @@ class SwinTransformerBlock(nn.Module):
         self.register_buffer("attn_mask", attn_mask)
         self.fused_window_process = fused_window_process
 
-    def forward(self, x):
-        H, W = self.input_resolution
-        B, L, C = x.shape
+    def forward(self, x):   # x (4, 3136, 96)
+        H, W = self.input_resolution    # H: 56, W: 56
+        B, L, C = x.shape   # B: 4, L: 3136, C: 96
         assert L == H * W, "input feature has wrong size"
 
         shortcut = x
         x = self.norm1(x)
-        x = x.view(B, H, W, C)
+        x = x.view(B, H, W, C)  # x (4, 56, 56, 96)
 
         # cyclic shift
         if self.shift_size > 0:
