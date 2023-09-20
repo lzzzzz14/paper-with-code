@@ -11,7 +11,4 @@
 
 [Autoregressive Visual Tracking (ARTrack) CVPR2023](https://github.com/lzzzzz14/paper-with-code/tree/main/paper/Autoregressive%20Visual%20Tracking%EF%BC%88ARTrack%EF%BC%89)
 
-[Joint Feature Learning and Relation Modeling for Tracking A One-Stream Framework (OSTrack)](https://github.com/lzzzzz14/paper-with-code/blob/main/paper/Joint%20Feature%20Learning%20and%20Relation%20Modeling%20for%20Tracking%20A%20One-Stream%20Framework%20(OSTrack)/README.md)
-
-
-
+[Joint Feature Learning and Relation Modeling for Tracking A One-Stream Framework（OSTrack）](https://github.com/lzzzzz14/paper-with-code/tree/main/paper/Joint%20Feature%20Learning%20and%20Relation%20Modeling%20for%20Tracking%20A%20One-Stream%20Framework%EF%BC%88OSTrack%EF%BC%89)
