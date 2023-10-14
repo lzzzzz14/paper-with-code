@@ -1,5 +1,9 @@
 # FEAR: Fast, Efficient, Accurate and Robust Visual Tracker
 
+[[2112.07957\] FEAR: Fast, Efficient, Accurate and Robust Visual Tracker (arxiv.org)](https://arxiv.org/abs/2112.07957)
+
+[FEARTracker: Official repo for FEAR: Fast, Efficient, Accurate and Robust Visual Tracker (ECCV 2022) (github.com)](https://github.com/PinataFarms/FEARTracker)
+
 
 
 * Siamese visual trackers
@@ -72,7 +76,7 @@ $$
 * e~S~: 用分类置信度分数对特征图 F~S~ 进行加权平均池化 (WAP)
 * e~T~: 对 F~T~‘ 进行平均池化
 
-计算 e~s~ he  e~T~ 的余弦相似度
+计算 e~s~ 和 e~T~ 的余弦相似度
 
 在推理中, 每过N帧, 我们选择和搜索图片余弦相似度最高的双模版表示, 然后通过预测框来更新动态模版
 
@@ -122,7 +126,7 @@ $$
 
 ### triplet loss
 
-* 确保模型子啊特征空间中将同一类别的样本聚集在一起, 同时将不同类别的样本分开
+* 确保模型在特征空间中将同一类别的样本聚集在一起, 同时将不同类别的样本分开
 * 鼓励模型使同一类别的样本距离更近, 不同类别的样本距离更远
 
 $$
@@ -159,7 +163,7 @@ $$
 
 ### overall loss
 
-* is a lonear combination of the three componets
+* is a linear combination of the three componets
 
 * λ1 = 0.5,  λ2 = 1,  λ3 = 1
 
