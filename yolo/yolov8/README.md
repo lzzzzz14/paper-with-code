@@ -175,4 +175,6 @@ for i, (f, n, m, args) in enumerate(d['backbone'] + d['head']):  # from, number,
 
 * 最后输出
 
-*return* nn.Sequential(*layers), sorted(save)
+```python
+return nn.Sequential(*layers), sorted(save)
+```
